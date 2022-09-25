@@ -83,6 +83,10 @@ class Campo {
     return _marcado;
   }
 
+  bool get explodido {
+    return _explodido;
+  }
+
   bool get resolvido {
     bool minadoEMarcado = minado && marcado;
     bool seguroEAberto = !minado && aberto;
