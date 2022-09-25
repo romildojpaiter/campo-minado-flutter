@@ -42,7 +42,7 @@ class Campo {
     }
 
     if (vizinhancaSegura) {
-      vizinhos.forEach((element) => element.abrir());
+      vizinhos.forEach((vizinho) => vizinho.abrir());
     }
   }
 
