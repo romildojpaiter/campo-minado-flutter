@@ -1,40 +1,70 @@
-import 'package:campo_minado/components/campo_widget.dart';
 import 'package:campo_minado/components/resultado_widget.dart';
+import 'package:campo_minado/components/tabuleiro_widget.dart';
 import 'package:campo_minado/models/campo.dart';
+import 'package:campo_minado/models/explosao_exception.dart';
+import 'package:campo_minado/models/tabuleiro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-class CampoMinadoApp extends StatelessWidget {
+class CampoMinadoApp extends StatefulWidget {
+  @override
+  State<CampoMinadoApp> createState() => _CampoMinadoAppState();
+}
+
+class _CampoMinadoAppState extends State<CampoMinadoApp> {
   //
+  Tabuleiro _tabuleiro = Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
+  bool? _venceu;
 
   _reinicar() {
-    print('Estou sendo reiniciado');
+    setState(() {
+      _venceu = null;
+      _tabuleiro.reinicar();
+    });
+  }
+
+  void _abrir(Campo campo) {
+    if (_venceu != null) {
+      return;
+    }
+    setState(() {
+      try {
+        campo.abrir();
+        if (_tabuleiro.resolvido) {
+          _venceu = true;
+        }
+      } on ExplosaoException {
+        _venceu = false;
+        _tabuleiro.revelarBombas();
+      }
+    });
+  }
+
+  void _alternarMarcacao(Campo campo) {
+    if (_venceu != null) {
+      return;
+    }
+    setState(() {
+      campo.alternarMarcacao();
+      if (_tabuleiro.resolvido) {
+        _venceu = true;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Campo campo = Campo(linha: 0, coluna: 0);
-    campo.abrir();
-
     return MaterialApp(
       home: Scaffold(
-        appBar: ResultadoWidget(venceu: null, onReiniciar: _reinicar()),
-        body: Container(
-          child: CampoWidget(
-              campo: campo,
-              onAbrir: _abrir,
-              onAlternarMarcacao: _alternarMarcacao),
+        appBar: ResultadoWidget(
+          venceu: _venceu,
+          onReiniciar: _reinicar,
+        ),
+        body: TabuleiroWidget(
+          tabuleiro: _tabuleiro,
+          onAbrir: _abrir,
+          onAlternarMarcacao: _alternarMarcacao,
         ),
       ),
     );
-  }
-
-  void _abrir(Campo campo) {
-    print('abrir...');
-  }
-
-  void _alternarMarcacao(Campo campo) {
-    print('alternar marcaca...');
   }
 }

@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:campo_minado/models/explosao_exception.dart';
-import 'package:flutter/foundation.dart';
 
 class Campo {
   final int linha;
@@ -42,13 +39,15 @@ class Campo {
     }
 
     if (vizinhancaSegura) {
-      vizinhos.forEach((vizinho) => vizinho.abrir());
+      for (var vizinho in vizinhos) {
+        vizinho.abrir();
+      }
     }
   }
 
-  void revelarBombas() {
+  void revelarBomba() {
     if (_minado) {
-      _aberto = false;
+      _aberto = true;
     }
   }
 

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'campo.dart';
 
 class Tabuleiro {
+  //
   final int linhas;
   final int colunas;
   final int qtdeBombas;
@@ -20,12 +21,16 @@ class Tabuleiro {
   }
 
   void reinicar() {
-    _campos.forEach((element) => element.reiniciar());
+    for (var element in _campos) {
+      element.reiniciar();
+    }
     _sortearMinas();
   }
 
   void revelarBombas() {
-    _campos.forEach((element) => element.revelarBombas());
+    for (var element in _campos) {
+      element.revelarBomba();
+    }
   }
 
   void _criarCampos() {
@@ -53,12 +58,14 @@ class Tabuleiro {
 
     while (sorteadas < qtdeBombas) {
       int i = Random().nextInt(_campos.length);
-      if (_campos[i].minado) {
+      if (campoNaoMinado(i)) {
         sorteadas++;
         _campos[i].minar();
       }
     }
   }
+
+  bool campoNaoMinado(int index) => !_campos[index].minado;
 
   List<Campo> get campos {
     return _campos;
