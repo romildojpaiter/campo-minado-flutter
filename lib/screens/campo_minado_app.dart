@@ -12,13 +12,14 @@ class CampoMinadoApp extends StatefulWidget {
 
 class _CampoMinadoAppState extends State<CampoMinadoApp> {
   //
-  Tabuleiro _tabuleiro = Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
+  // Tabuleiro _tabuleiro = Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
+  Tabuleiro? _tabuleiro;
   bool? _venceu;
 
   _reinicar() {
     setState(() {
       _venceu = null;
-      _tabuleiro.reinicar();
+      _tabuleiro!.reinicar();
     });
   }
 
@@ -29,12 +30,12 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     setState(() {
       try {
         campo.abrir();
-        if (_tabuleiro.resolvido) {
+        if (_tabuleiro!.resolvido) {
           _venceu = true;
         }
       } on ExplosaoException {
         _venceu = false;
-        _tabuleiro.revelarBombas();
+        _tabuleiro!.revelarBombas();
       }
     });
   }
@@ -45,10 +46,24 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     }
     setState(() {
       campo.alternarMarcacao();
-      if (_tabuleiro.resolvido) {
+      if (_tabuleiro!.resolvido) {
         _venceu = true;
       }
     });
+  }
+
+  Tabuleiro _getTabuleiro(double largura, double altura) {
+    if (_tabuleiro == null) {
+      int qtdeColunas = 15;
+      double tamanhoCampo = largura / qtdeColunas;
+      int qtdLinhas = (altura / tamanhoCampo).floor();
+      _tabuleiro = Tabuleiro(
+        linhas: qtdLinhas,
+        colunas: qtdeColunas,
+        qtdeBombas: 3,
+      );
+    }
+    return _tabuleiro!;
   }
 
   @override
@@ -59,10 +74,20 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
           venceu: _venceu,
           onReiniciar: _reinicar,
         ),
-        body: TabuleiroWidget(
-          tabuleiro: _tabuleiro,
-          onAbrir: _abrir,
-          onAlternarMarcacao: _alternarMarcacao,
+        body: Container(
+          color: Colors.grey,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return TabuleiroWidget(
+                tabuleiro: _getTabuleiro(
+                  constraints.maxWidth,
+                  constraints.maxHeight,
+                ),
+                onAbrir: _abrir,
+                onAlternarMarcacao: _alternarMarcacao,
+              );
+            },
+          ),
         ),
       ),
     );
